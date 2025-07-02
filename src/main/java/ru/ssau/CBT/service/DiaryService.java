@@ -17,17 +17,16 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final UserRepository userRepository;
 
-    public DiaryDto createDiaryEntry(DiaryCreateDto createDto) {
-        User user = userRepository.findById(createDto.getUsername())
+    public DiaryDto createDiaryEntry(DiaryDto dto) {
+        User user = userRepository.findById(dto.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Diary diary = new Diary();
         diary.setUsername(user);
-        diary.setDate(createDto.getDate());
-        diary.setThought(createDto.getThought());
-        diary.setMood(createDto.getMood());
-        System.out.println("countnegative from DTO = " + createDto.getCountnegative());
-        diary.setCountnegative(createDto.getCountnegative());
+        diary.setDate(dto.getDate());
+        diary.setThought(dto.getThought());
+        diary.setMood(dto.getMood());
+        diary.setCountnegative(dto.getCountnegative());
 
         Diary savedDiary = diaryRepository.save(diary);
 

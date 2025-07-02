@@ -66,12 +66,12 @@ export class StatisticsComponent implements OnInit {
 
   moodToNumber(mood: string): number {
     switch (mood) {
-      case 'JOY': return 2;
-      case 'CALM': return 1;
-      case 'ANXIETY': return 0;
-      case 'SADNESS': return -1;
-      case 'ANGER': return -2;
-      default: return 0;
+      case 'JOY': return 4;
+      case 'CALM': return 3;
+      case 'ANXIETY': return 2;
+      case 'SADNESS': return 1;
+      case 'ANGER': return 0;
+      default: return 2;
     }
   }
 

@@ -30,14 +30,13 @@ export class TextAnalysisService {
       };
     }
 
-    console.log('Анализируем текст:', text); // Отладочная информация
+    console.log('Анализируем текст:', text); 
 
     let negativeCount = 0;
     let highlightedText = text;
     const foundWords: string[] = [];
 
     for (const negativeWord of this.NEGATIVE_WORDS) {
-      // Используем более простой подход без границ слов для русского языка
       const regex = new RegExp(this.escapeRegExp(negativeWord), 'gi');
       const matches = text.match(regex);
       
@@ -45,7 +44,6 @@ export class TextAnalysisService {
         negativeCount += matches.length;
         foundWords.push(...matches);
         
-        // Подсветка негативных слов
         highlightedText = highlightedText.replace(
           regex,
           '<span class="negative-word">$&</span>'
@@ -53,7 +51,7 @@ export class TextAnalysisService {
       }
     }
 
-    console.log('Найдено негативных слов:', foundWords); // Отладочная информация
+    console.log('Найдено негативных слов:', foundWords); 
     console.log('Общее количество:', negativeCount);
 
     return {

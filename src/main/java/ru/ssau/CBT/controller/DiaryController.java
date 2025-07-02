@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.ssau.CBT.model.DiaryCreateDto;
 import ru.ssau.CBT.model.DiaryDto;
 import ru.ssau.CBT.service.DiaryService;
 
@@ -18,7 +17,7 @@ public class DiaryController {
     private final DiaryService diaryService;
 
     @PostMapping
-    public ResponseEntity<DiaryDto> createEntry(@RequestBody DiaryCreateDto createDto) {
+    public ResponseEntity<DiaryDto> createEntry(@RequestBody DiaryDto createDto) {
         DiaryDto created = diaryService.createDiaryEntry(createDto);
         return ResponseEntity.ok(created);
     }

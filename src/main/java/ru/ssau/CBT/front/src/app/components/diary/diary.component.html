@@ -30,7 +30,6 @@
 
     <div *ngIf="!loading" class="diary-form">
       <div *ngIf="!canEdit" class="read-only-notice">
-        <div class="notice-icon">📝</div>
         <div class="notice-text">
           <strong>Запись за этот день уже создана</strong><br>
           Можно просматривать, но нельзя редактировать
@@ -96,7 +95,7 @@
     <div *ngIf="textAnalysis && textAnalysis.negativeCount === 0 && textAnalysis.originalText" class="analysis-section positive">
       <h3>Анализ текста:</h3>
       <div class="negative-count positive">
-        ✅ Негативных слов не найдено
+         Негативных слов не найдено
       </div>
     </div>
   </div>
