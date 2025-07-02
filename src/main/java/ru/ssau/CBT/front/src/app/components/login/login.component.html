@@ -44,7 +44,7 @@
 
       <button 
         type="submit" 
-        [disabled]="loginForm.invalid || loading"
+        [disabled]="loginForm.invalid"
         class="login-button"
       >
         {{ loading ? 'Logging in...' : 'Login' }}
