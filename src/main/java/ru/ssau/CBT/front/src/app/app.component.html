@@ -1,0 +1,2 @@
+<app-statistics *ngIf="showStats" [username]="username" (close)="showStats = false"></app-statistics>
+<router-outlet (activate)="onActivate($event)"></router-outlet>

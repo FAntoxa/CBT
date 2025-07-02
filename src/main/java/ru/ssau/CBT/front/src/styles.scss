@@ -1,0 +1,76 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$primary-palette: mat.$azure-palette;
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: $primary-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: 'Roboto',
+    bold-weight: 900,
+  ),
+  density: (
+    scale: 0,
+  ),
+));
+
+:root {
+  @include mat.all-component-themes($theme);
+  @include mat.all-component-colors($theme);
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+nav a {
+  margin-left: 15px;
+  text-decoration: none;
+  
+  &.active {
+    font-weight: bold;
+  }
+}
+
+.diary-list {
+  margin-top: 20px;
+}
+
+.diary-edit {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.mood-Отличное { color: #4caf50; }
+.mood-Хорошее { color: #8bc34a; }
+.mood-Нейтральное { color: #9e9e9e; }
+.mood-Плохое { color: #ff9800; }
+.mood-Ужасное { color: #f44336; }

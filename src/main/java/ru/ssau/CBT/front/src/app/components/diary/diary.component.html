@@ -1,0 +1,102 @@
+<div class="diary-container">
+  <div class="diary-header">
+    <h1>Дневник настроения</h1>
+    <div class="header-controls">
+      <input 
+        type="date" 
+        [value]="currentDate" 
+        (change)="onDateChange($event)"
+        class="date-picker"
+      >
+      <button (click)="onShowStats()" class="stats-button">Статистика</button>
+      <button (click)="logout()" class="logout-button">Выйти</button>
+    </div>
+  </div>
+
+  <div class="diary-content">
+    <div class="navigation-buttons">
+      <button (click)="loadPreviousEntry()" class="nav-button">
+        ← Предыдущая запись
+      </button>
+      <button (click)="loadNextEntry()" class="nav-button">
+        Следующая запись →
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      Загрузка...
+    </div>
+
+    <div *ngIf="!loading" class="diary-form">
+      <div *ngIf="!canEdit" class="read-only-notice">
+        <div class="notice-icon">📝</div>
+        <div class="notice-text">
+          <strong>Запись за этот день уже создана</strong><br>
+          Можно просматривать, но нельзя редактировать
+        </div>
+      </div>
+
+      <form [formGroup]="diaryForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="mood">Настроение:</label>
+          <select 
+            id="mood" 
+            formControlName="mood" 
+            class="form-control"
+            [disabled]="!canEdit"
+          >
+            <option value="">Выберите настроение</option>
+            <option *ngFor="let mood of moods" [value]="mood.value">
+              {{ mood.displayName }}
+            </option>
+          </select>
+          <div *ngIf="diaryForm.get('mood')?.invalid && diaryForm.get('mood')?.touched" class="error-message">
+            Выберите настроение
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="thought">Записи дня:</label>
+          <textarea 
+            id="thought" 
+            formControlName="thought" 
+            placeholder="Опишите свои мысли и события дня..."
+            class="form-control"
+            rows="6"
+            [disabled]="!canEdit"
+          ></textarea>
+          <div *ngIf="diaryForm.get('thought')?.invalid && diaryForm.get('thought')?.touched" class="error-message">
+            Заполните записи дня
+          </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <button 
+          type="submit" 
+          [disabled]="diaryForm.invalid || saving || !canEdit"
+          class="save-button"
+        >
+          {{ saving ? 'Сохранение...' : (canEdit ? 'Сохранить' : 'Запись уже создана') }}
+        </button>
+      </form>
+    </div>
+
+    <div *ngIf="textAnalysis && textAnalysis.negativeCount > 0" class="analysis-section">
+      <h3>Анализ текста:</h3>
+      <div class="negative-count">
+        Найдено негативных слов: <strong>{{ textAnalysis.negativeCount }}</strong>
+      </div>
+      <div class="highlighted-text" [innerHTML]="textAnalysis.highlightedText"></div>
+    </div>
+
+    <div *ngIf="textAnalysis && textAnalysis.negativeCount === 0 && textAnalysis.originalText" class="analysis-section positive">
+      <h3>Анализ текста:</h3>
+      <div class="negative-count positive">
+        ✅ Негативных слов не найдено
+      </div>
+    </div>
+  </div>
+</div> 
