@@ -36,6 +36,7 @@ export class DiaryComponent implements OnInit {
   textAnalysis: TextAnalysisResult | null = null;
   canEdit = true; // Можно ли редактировать запись
   @Output() showStats = new EventEmitter<void>();
+  today = new Date().toISOString().split('T')[0];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -64,12 +65,10 @@ export class DiaryComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
     if (!this.username) {
       this.router.navigate(['/login']);
       return;
     }
-    
     this.loadCurrentEntry();
   }
 
@@ -85,6 +84,7 @@ export class DiaryComponent implements OnInit {
         });
         this.analyzeText(entry.thought);
         this.disableForm();
+        this.loading = false;
       },
       error: (error) => {
         if (error.status === 404) {
@@ -99,9 +99,6 @@ export class DiaryComponent implements OnInit {
           console.error('Error loading entry:', error);
         }
         this.loading = false;
-      },
-      complete: () => {
-        // this.loading = false; // можно убрать или оставить пустым
       }
     });
   }
@@ -172,13 +169,19 @@ export class DiaryComponent implements OnInit {
   }
 
   loadNextEntry(): void {
+    const today = this.today;
+    // Если уже сегодня — не переходим дальше
+    if (this.currentDate === today) {
+      this.errorMessage = 'Вы уже на сегодняшней дате';
+      return;
+    }
     this.loading = true;
     this.errorMessage = '';
     this.diaryService.getNextEntry(this.username, this.currentDate).subscribe({
       next: (entry) => {
         this.currentEntry = entry;
         this.currentDate = entry.date;
-        this.canEdit = false; // При просмотре старых записей редактирование запрещено
+        this.canEdit = false;
         this.diaryForm.patchValue({
           thought: entry.thought,
           mood: entry.mood
@@ -190,7 +193,22 @@ export class DiaryComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         if (error.status === 404) {
-          this.errorMessage = 'Следующая запись не найдена';
+          // Если следующей записи нет и дата — сегодня, разрешаем создать новую запись
+          const nextDate = this.addDays(this.currentDate, 1);
+          if (nextDate > today) {
+            this.errorMessage = 'Нельзя перейти на будущую дату';
+            return;
+          }
+          if (nextDate === today) {
+            this.currentDate = today;
+            this.currentEntry = null;
+            this.canEdit = true;
+            this.diaryForm.reset();
+            this.textAnalysis = null;
+            this.enableForm();
+          } else {
+            this.errorMessage = 'Следующая запись не найдена';
+          }
         } else {
           this.errorMessage = 'Ошибка загрузки следующей записи';
           console.error('Error loading next entry:', error);
@@ -200,8 +218,19 @@ export class DiaryComponent implements OnInit {
   }
 
   onDateChange(event: any): void {
-    this.currentDate = event.target.value;
+    const selectedDate = event.target.value;
+    if (selectedDate > this.today) {
+      this.errorMessage = 'Нельзя выбрать будущую дату';
+      return;
+    }
+    this.currentDate = selectedDate;
     this.loadCurrentEntry();
+  }
+
+  addDays(dateStr: string, days: number): string {
+    const date = new Date(dateStr);
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split('T')[0];
   }
 
   private disableForm(): void {

@@ -33,6 +33,7 @@ export class StatisticsComponent implements OnInit {
   constructor(private diaryService: DiaryService) {}
 
   ngOnInit(): void {
+    //console.log('StatisticsComponent username:', this.username);
     this.diaryService.getAllEntries(this.username).subscribe({
       next: (entries) => {
         this.entries = entries.sort((a, b) => a.date.localeCompare(b.date));

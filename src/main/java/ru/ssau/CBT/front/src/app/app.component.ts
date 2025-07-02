@@ -13,10 +13,11 @@ import { StatisticsComponent } from './components/statistics/statistics.componen
 })
 export class AppComponent {
   showStats = false;
-  username = '';
 
-  constructor(private authService: AuthService) {
-    this.username = this.authService.getCurrentUsername();
+  constructor(private authService: AuthService) {}
+
+  get username() {
+    return this.authService.getCurrentUsername();
   }
 
   onActivate(component: any) {

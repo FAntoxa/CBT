@@ -7,6 +7,7 @@
         [value]="currentDate" 
         (change)="onDateChange($event)"
         class="date-picker"
+        [max]="today"
       >
       <button (click)="onShowStats()" class="stats-button">Статистика</button>
       <button (click)="logout()" class="logout-button">Выйти</button>
