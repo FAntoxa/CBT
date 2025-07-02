@@ -18,7 +18,6 @@ export class StatisticsComponent implements OnInit {
   loading = true;
   error = '';
 
-  // Для графиков
   moodLabels: string[] = [];
   moodData: number[] = [];
   negativeLabels: string[] = [];
@@ -27,13 +26,11 @@ export class StatisticsComponent implements OnInit {
   moodChartData: any;
   negativeChartData: any;
 
-  // Для стрика
   positiveStreak = 0;
 
   constructor(private diaryService: DiaryService) {}
 
   ngOnInit(): void {
-    //console.log('StatisticsComponent username:', this.username);
     this.diaryService.getAllEntries(this.username).subscribe({
       next: (entries) => {
         this.entries = entries.sort((a, b) => a.date.localeCompare(b.date));
@@ -42,7 +39,7 @@ export class StatisticsComponent implements OnInit {
         this.calculatePositiveStreak();
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Ошибка загрузки статистики';
         this.loading = false;
       }
@@ -51,7 +48,6 @@ export class StatisticsComponent implements OnInit {
 
   prepareMoodChart(): void {
     this.moodLabels = this.entries.map(e => e.date);
-    // Преобразуем настроение в числовое значение для графика
     this.moodData = this.entries.map(e => this.moodToNumber(e.mood));
     this.moodChartData = {
       labels: this.moodLabels,
@@ -68,7 +64,6 @@ export class StatisticsComponent implements OnInit {
     };
   }
 
-  // Преобразование настроения в число для графика
   moodToNumber(mood: string): number {
     switch (mood) {
       case 'JOY': return 2;

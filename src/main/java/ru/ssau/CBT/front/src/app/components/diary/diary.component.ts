@@ -34,7 +34,7 @@ export class DiaryComponent implements OnInit {
   saving = false;
   errorMessage = '';
   textAnalysis: TextAnalysisResult | null = null;
-  canEdit = true; // Можно ли редактировать запись
+  canEdit = true;
   @Output() showStats = new EventEmitter<void>();
   today = new Date().toISOString().split('T')[0];
 
@@ -48,13 +48,10 @@ export class DiaryComponent implements OnInit {
   ) {
     this.currentDate = new Date().toISOString().split('T')[0];
     this.username = this.authService.getCurrentUsername();
-    
     this.diaryForm = this.formBuilder.group({
       thought: ['', [Validators.required]],
       mood: ['', [Validators.required]]
     });
-
-    // Подписываемся на изменения в тексте для анализа
     this.diaryForm.get('thought')?.valueChanges.subscribe(text => {
       this.analyzeText(text);
     });
@@ -77,7 +74,7 @@ export class DiaryComponent implements OnInit {
     this.diaryService.getEntry(this.username, this.currentDate).subscribe({
       next: (entry) => {
         this.currentEntry = entry;
-        this.canEdit = false; // Запись уже существует, редактирование запрещено
+        this.canEdit = false;
         this.diaryForm.patchValue({
           thought: entry.thought,
           mood: entry.mood
@@ -88,7 +85,6 @@ export class DiaryComponent implements OnInit {
       },
       error: (error) => {
         if (error.status === 404) {
-          // Запись не найдена, можно создать новую
           this.currentEntry = null;
           this.canEdit = true;
           this.diaryForm.reset();
@@ -96,7 +92,6 @@ export class DiaryComponent implements OnInit {
           this.enableForm();
         } else {
           this.errorMessage = 'Ошибка загрузки записи';
-          console.error('Error loading entry:', error);
         }
         this.loading = false;
       }
@@ -111,9 +106,7 @@ export class DiaryComponent implements OnInit {
     if (this.diaryForm.valid && this.canEdit) {
       this.saving = true;
       this.errorMessage = '';
-
       const countnegative = this.textAnalysis?.negativeCount ?? 0;
-      console.log('countnegative to send:', countnegative);
       const createEntry = {
         username: this.username,
         date: this.currentDate,
@@ -121,17 +114,15 @@ export class DiaryComponent implements OnInit {
         mood: this.diaryForm.value.mood,
         countnegative: countnegative
       };
-
       this.diaryService.createEntry(createEntry).subscribe({
         next: (entry) => {
           this.currentEntry = entry;
-          this.canEdit = false; // После сохранения редактирование запрещено
+          this.canEdit = false;
           this.errorMessage = '';
           this.disableForm();
         },
-        error: (error) => {
+        error: () => {
           this.errorMessage = 'Ошибка сохранения записи';
-          console.error('Error saving entry:', error);
         },
         complete: () => {
           this.saving = false;
@@ -147,7 +138,7 @@ export class DiaryComponent implements OnInit {
       next: (entry) => {
         this.currentEntry = entry;
         this.currentDate = entry.date;
-        this.canEdit = false; // При просмотре старых записей редактирование запрещено
+        this.canEdit = false;
         this.diaryForm.patchValue({
           thought: entry.thought,
           mood: entry.mood
@@ -162,7 +153,6 @@ export class DiaryComponent implements OnInit {
           this.errorMessage = 'Предыдущая запись не найдена';
         } else {
           this.errorMessage = 'Ошибка загрузки предыдущей записи';
-          console.error('Error loading previous entry:', error);
         }
       }
     });
@@ -170,7 +160,6 @@ export class DiaryComponent implements OnInit {
 
   loadNextEntry(): void {
     const today = this.today;
-    // Если уже сегодня — не переходим дальше
     if (this.currentDate === today) {
       this.errorMessage = 'Вы уже на сегодняшней дате';
       return;
@@ -193,7 +182,6 @@ export class DiaryComponent implements OnInit {
       error: (error) => {
         this.loading = false;
         if (error.status === 404) {
-          // Если следующей записи нет и дата — сегодня, разрешаем создать новую запись
           const nextDate = this.addDays(this.currentDate, 1);
           if (nextDate > today) {
             this.errorMessage = 'Нельзя перейти на будущую дату';
@@ -211,7 +199,6 @@ export class DiaryComponent implements OnInit {
           }
         } else {
           this.errorMessage = 'Ошибка загрузки следующей записи';
-          console.error('Error loading next entry:', error);
         }
       }
     });
@@ -234,11 +221,13 @@ export class DiaryComponent implements OnInit {
   }
 
   private disableForm(): void {
-    this.diaryForm.disable();
+    this.diaryForm.get('thought')?.disable();
+    this.diaryForm.get('mood')?.disable();
   }
 
   private enableForm(): void {
-    this.diaryForm.enable();
+    this.diaryForm.get('thought')?.enable();
+    this.diaryForm.get('mood')?.enable();
   }
 
   logout(): void {
